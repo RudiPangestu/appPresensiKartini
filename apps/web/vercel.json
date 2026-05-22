@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/notify-kegiatan",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/notify-rekap",
+      "schedule": "0 9 * * 5"
+    }
+  ]
+}
