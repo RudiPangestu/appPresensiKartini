@@ -37,7 +37,7 @@ export default function AdminUsersPage() {
   const loadData = useCallback(async () => {
     setLoading(true);
     const { data: users } = await supabase
-      .from("users")
+      .from("user_roles")
       .select("*, profiles(*)")
       .order("created_at", { ascending: false });
     setData((users ?? []) as UserWithProfile[]);
@@ -60,7 +60,7 @@ export default function AdminUsersPage() {
     try {
       if (editId) {
         // Update role
-        await supabase.from("users").update({ role: form.role }).eq("id", editId);
+        await supabase.from("user_roles").update({ role: form.role }).eq("id", editId);
         // Update profile
         await supabase.from("profiles").update({ nama: form.nama }).eq("user_id", editId);
       } else {
@@ -77,7 +77,7 @@ export default function AdminUsersPage() {
         if (!authData.user) throw new Error("Gagal membuat user");
 
         // Insert ke tabel users
-        const { error: userErr } = await supabase.from("users").insert({
+        const { error: userErr } = await supabase.from("user_roles").insert({
           id: authData.user.id,
           role: form.role,
         });
@@ -101,7 +101,7 @@ export default function AdminUsersPage() {
   const handleDelete = async () => {
     if (!deleteId) return;
     setDeleting(true);
-    await supabase.from("users").delete().eq("id", deleteId);
+    await supabase.from("user_roles").delete().eq("id", deleteId);
     setDeleteId(null);
     setDeleting(false);
     await loadData();

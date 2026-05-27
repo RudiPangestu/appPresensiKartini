@@ -53,7 +53,7 @@ export async function updateSession(request: NextRequest) {
   if (user && pathname === "/login") {
     // Query role dari tabel users
     const { data: userData } = await supabase
-      .from("users")
+      .from("user_roles")
       .select("role")
       .eq("id", user.id)
       .single();
@@ -67,7 +67,7 @@ export async function updateSession(request: NextRequest) {
   // ── Role-based route protection ──────────────────────────
   if (user) {
     const { data: userData } = await supabase
-      .from("users")
+      .from("user_roles")
       .select("role")
       .eq("id", user.id)
       .single();

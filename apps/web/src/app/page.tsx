@@ -20,7 +20,7 @@ export default async function RootPage() {
 
   // Query role
   const { data: userData } = await supabase
-    .from("users")
+    .from("user_roles")
     .select("role")
     .eq("id", user.id)
     .single();

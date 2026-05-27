@@ -58,9 +58,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function loadRole(userId: string) {
     try {
       const { data } = await supabase
-        .from("profiles")
+        .from("user_roles")
         .select("role")
-        .eq("user_id", userId)
+        .eq("id", userId)
         .single();
       setRole((data?.role as UserRole) ?? null);
     } catch {

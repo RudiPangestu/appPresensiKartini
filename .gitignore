@@ -47,3 +47,11 @@ pnpm-debug.log*
 
 # ── Supabase ────────────────────────────────────────────────
 supabase/.temp/
+
+# ── Seed & migration scripts (contain secrets) ─────────────
+seed_via_api.js
+seed_fix_siswa.js
+run_migrations.js
+_fix_*.sql
+_all_migrations.sql
+_seed_*.sql
