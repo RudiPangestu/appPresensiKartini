@@ -31,6 +31,7 @@ const menuByRole: Record<string, NavItem[]> = {
   admin: [
     { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { title: "Users", href: "/admin/users", icon: Users },
+    { title: "Tahun Ajaran", href: "/admin/tahun-ajaran", icon: CalendarDays },
     { title: "Kelas", href: "/admin/kelas", icon: School },
     { title: "Siswa", href: "/admin/siswa", icon: GraduationCap },
     { title: "Guru", href: "/admin/guru", icon: UserCircle },

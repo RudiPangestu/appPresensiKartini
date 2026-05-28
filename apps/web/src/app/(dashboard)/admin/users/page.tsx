@@ -31,7 +31,7 @@ export default function AdminUsersPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "", role: "guru", nama: "" });
+  const [form, setForm] = useState({ email: "", password: "", role: "guru", nama: "", no_hp: "" });
   const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
@@ -47,7 +47,7 @@ export default function AdminUsersPage() {
   useEffect(() => { loadData(); }, [loadData]);
 
   const resetForm = () => {
-    setForm({ email: "", password: "", role: "guru", nama: "" });
+    setForm({ email: "", password: "", role: "guru", nama: "", no_hp: "" });
     setEditId(null);
     setShowForm(false);
     setError(null);
@@ -62,32 +62,26 @@ export default function AdminUsersPage() {
         // Update role
         await supabase.from("user_roles").update({ role: form.role }).eq("id", editId);
         // Update profile
-        await supabase.from("profiles").update({ nama: form.nama }).eq("user_id", editId);
+        await supabase.from("profiles").update({ nama: form.nama, no_hp: form.no_hp || null }).eq("user_id", editId);
       } else {
         // Validasi form baru
         if (!form.email.trim()) { setError("Email wajib diisi"); setSaving(false); return; }
         if (form.password.length < 6) { setError("Password minimal 6 karakter"); setSaving(false); return; }
 
-        // Buat auth user via admin API melalui server action (simplified: pakai signUp)
-        const { data: authData, error: authErr } = await supabase.auth.signUp({
-          email: form.email,
-          password: form.password,
+        // Buat user via server-side API (bypass RLS + rate limit)
+        const res = await fetch("/api/admin/create-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: form.email,
+            password: form.password,
+            role: form.role,
+            nama: form.nama,
+            no_hp: form.no_hp || null,
+          }),
         });
-        if (authErr) throw authErr;
-        if (!authData.user) throw new Error("Gagal membuat user");
-
-        // Insert ke tabel users
-        const { error: userErr } = await supabase.from("user_roles").insert({
-          id: authData.user.id,
-          role: form.role,
-        });
-        if (userErr) throw userErr;
-
-        // Insert ke tabel profiles
-        await supabase.from("profiles").insert({
-          user_id: authData.user.id,
-          nama: form.nama,
-        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "Gagal membuat user");
       }
       resetForm();
       await loadData();
@@ -113,6 +107,7 @@ export default function AdminUsersPage() {
       password: "",
       role: user.role,
       nama: user.profiles?.[0]?.nama ?? "",
+      no_hp: user.profiles?.[0]?.no_hp ?? "",
     });
     setEditId(user.id);
     setShowForm(true);
@@ -164,6 +159,10 @@ export default function AdminUsersPage() {
             <div className="space-y-2">
               <Label>Nama Lengkap</Label>
               <Input value={form.nama} onChange={(e) => setForm({...form, nama: e.target.value})} placeholder="Nama lengkap" />
+            </div>
+            <div className="space-y-2">
+              <Label>No. HP</Label>
+              <Input value={form.no_hp} onChange={(e) => setForm({...form, no_hp: e.target.value})} placeholder="08xxxxxxxxxx" />
             </div>
             <div className="space-y-2">
               <Label>Role</Label>
